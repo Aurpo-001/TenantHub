@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "c0002555-3f38-43e9-8286-33d0d2ca6dc1",
+		"name": "Tenant Management API Tests",
+		"description": "`Testing APIs for Module 1`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47457170",
+		"_collection_link": "https://aurpo002-9073929.postman.co/workspace/356c1d9a-5b01-4a1d-879a-69e3bf350adf/collection/47457170-c0002555-3f38-43e9-8286-33d0d2ca6dc1?action=share&source=collection_link&creator=47457170"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1903",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John Student\",\n    \"email\": \"john.student@university.edu\",\n    \"password\": \"password123\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"john.student@university.edu\",\n    \"password\": \"password123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxMGI4Mzg5MmYzNzU1NzI2Y2EyYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzU1MTg5NDMyLCJleHAiOjE3NTc3ODE0MzJ9.727iLgyeArixX9QVEuzKqu0z3Q-ugh928sokU40ctaE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:1903/api/auth/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@tenantmanager.com\",\n    \"password\": \"admin123\",\n    \"phone\": \"+1234567891\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Property",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxM2UyMzg5MmYzNzU1NzI2Y2EzMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NTE5MDI0MywiZXhwIjoxNzU3NzgyMjQzfQ.QwkahA93jxTaH1jYxxmlrogQPr1IvSh1G1c9wLyDI7w",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Beautiful 2BR Apartment Near Campus\",\n    \"description\": \"Spacious apartment perfect for students, walking distance to university\",\n    \"type\": \"apartment\",\n    \"price\": 1200,\n    \"location\": {\n        \"address\": \"123 University Ave, Campus Town\",\n        \"coordinates\": {\n            \"lat\": 40.7128,\n            \"lng\": -74.0060\n        },\n        \"nearbyPlaces\": {\n            \"campus\": {\n                \"distance\": 500,\n                \"duration\": \"5 minutes walk\"\n            },\n            \"mosque\": {\n                \"name\": \"Campus Mosque\",\n                \"distance\": 300,\n                \"duration\": \"3 minutes walk\"\n            }\n        }\n    },\n    \"images\": [\n        {\n            \"url\": \"https://example.com/image1.jpg\",\n            \"alt\": \"Living room\",\n            \"isPrimary\": true\n        }\n    ],\n    \"amenities\": [\"wifi\", \"parking\", \"laundry\", \"security\"],\n    \"specifications\": {\n        \"bedrooms\": 2,\n        \"bathrooms\": 1,\n        \"area\": 800,\n        \"floor\": 2,\n        \"totalFloors\": 4,\n        \"furnished\": \"semi\"\n    },\n    \"availability\": {\n        \"isAvailable\": true,\n        \"availableFrom\": \"2024-09-01T00:00:00.000Z\",\n        \"minimumStay\": 6\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Properties",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

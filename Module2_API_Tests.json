@@ -1,0 +1,568 @@
+{
+	"info": {
+		"_postman_id": "c0002555-3f38-43e9-8286-33d0d2ca6dc1",
+		"name": "Tenant Management API Tests",
+		"description": "`Testing APIs for Module 1`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47457170",
+		"_collection_link": "https://aurpo002-9073929.postman.co/workspace/356c1d9a-5b01-4a1d-879a-69e3bf350adf/collection/47457170-c0002555-3f38-43e9-8286-33d0d2ca6dc1?action=share&source=collection_link&creator=47457170"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John Student\",\n    \"email\": \"john.student@university.edu\",\n    \"password\": \"password123\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"user\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"john.student@university.edu\",\n    \"password\": \"password123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Profile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxMGI4Mzg5MmYzNzU1NzI2Y2EyYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzU1MTg5NDMyLCJleHAiOjE3NTc3ODE0MzJ9.727iLgyeArixX9QVEuzKqu0z3Q-ugh928sokU40ctaE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@tenantmanager.com\",\n    \"password\": \"admin123\",\n    \"phone\": \"+1234567891\",\n    \"role\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Property",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxM2UyMzg5MmYzNzU1NzI2Y2EzMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NTE5MDI0MywiZXhwIjoxNzU3NzgyMjQzfQ.QwkahA93jxTaH1jYxxmlrogQPr1IvSh1G1c9wLyDI7w",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Beautiful 2BR Apartment Near Campus\",\n    \"description\": \"Spacious apartment perfect for students, walking distance to university\",\n    \"type\": \"apartment\",\n    \"price\": 1200,\n    \"location\": {\n        \"address\": \"123 University Ave, Campus Town\",\n        \"coordinates\": {\n            \"lat\": 40.7128,\n            \"lng\": -74.0060\n        },\n        \"nearbyPlaces\": {\n            \"campus\": {\n                \"distance\": 500,\n                \"duration\": \"5 minutes walk\"\n            },\n            \"mosque\": {\n                \"name\": \"Campus Mosque\",\n                \"distance\": 300,\n                \"duration\": \"3 minutes walk\"\n            }\n        }\n    },\n    \"images\": [\n        {\n            \"url\": \"https://example.com/image1.jpg\",\n            \"alt\": \"Living room\",\n            \"isPrimary\": true\n        }\n    ],\n    \"amenities\": [\"wifi\", \"parking\", \"laundry\", \"security\"],\n    \"specifications\": {\n        \"bedrooms\": 2,\n        \"bathrooms\": 1,\n        \"area\": 800,\n        \"floor\": 2,\n        \"totalFloors\": 4,\n        \"furnished\": \"semi\"\n    },\n    \"availability\": {\n        \"isAvailable\": true,\n        \"availableFrom\": \"2024-09-01T00:00:00.000Z\",\n        \"minimumStay\": 6\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Properties",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Booking",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxMGI4Mzg5MmYzNzU1NzI2Y2EyYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzU1MTg5ODkzLCJleHAiOjE3NTc3ODE4OTN9.at5yp7hmIC8E4ng3kw-3u4PD2j1MqEocl3incVsz5Ds",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"propertyId\": \"689e1aa53892f3755726ca33\",\n    \"bookingType\": \"visit\",\n    \"visitDate\": \"2024-09-15\",\n    \"visitTimeSlot\": \"afternoon\",\n    \"userMessage\": \"I'm interested in visiting this property. I'm a university student looking for accommodation.\",\n    \"preferredContactTime\": \"weekdays after 3 PM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"bookings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Properties for Booking",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get My Bookings",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxMGI4Mzg5MmYzNzU1NzI2Y2EyYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzU1MTg5ODkzLCJleHAiOjE3NTc3ODE4OTN9.at5yp7hmIC8E4ng3kw-3u4PD2j1MqEocl3incVsz5Ds",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:1903/api/bookings/my-bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"bookings",
+						"my-bookings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@tenantmanager.com\",\n    \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Approve Booking",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxM2UyMzg5MmYzNzU1NzI2Y2EzMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NTI0NjYzNiwiZXhwIjoxNzU3ODM4NjM2fQ.CCsBOdK-DOIOgAMFbJyhRDuNzsc9F-lf44qMMIqD7K8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"action\": \"approve\",\n    \"adminNotes\": \"Booking approved. Owner has been contacted.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/bookings/689eebfe369cca20d128a1ac/admin-action",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"bookings",
+						"689eebfe369cca20d128a1ac",
+						"admin-action"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Properties for ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1903/api/properties",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Login for Token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"admin@tenantmanager.com\",\n    \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Notifications",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxMGI4Mzg5MmYzNzU1NzI2Y2EyYSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzU1MTg5ODkzLCJleHAiOjE3NTc3ODE4OTN9.at5yp7hmIC8E4ng3kw-3u4PD2j1MqEocl3incVsz5Ds",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:1903/api/notifications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"notifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin Create Notification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxM2UyMzg5MmYzNzU1NzI2Y2EzMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NTIzODA3NSwiZXhwIjoxNzU3ODMwMDc1fQ.e_yVhOdat9VEqhL9UipIZ7UbfihA7R6Ce8lDrb4fFEU",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"recipients\": [\"689e10b83892f3755726ca2a\"],\n    \"type\": \"system_update\",\n    \"title\": \"Welcome to Tenant Management System\",\n    \"message\": \"Thank you for using our platform. Your booking has been processed.\",\n    \"priority\": \"medium\",\n    \"actionRequired\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/notifications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"notifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Owner",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Property Owner\",\n    \"email\": \"owner@example.com\",\n    \"password\": \"owner123\",\n    \"phone\": \"+1234567892\",\n    \"role\": \"owner\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:1903/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Owner Dashboard",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWYwMzAxY2U1NTFlZGNiNDUzYzNmZSIsInJvbGUiOiJvd25lciIsImlhdCI6MTc1NTI1MTQ1OCwiZXhwIjoxNzU3ODQzNDU4fQ.aObT9jWK-o5TWW47nE68_XpNKqq9sGmH4sU9Xcr7Grs",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:1903/api/dashboard/owner",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"dashboard",
+						"owner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Admin Dashboard",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWUxM2UyMzg5MmYzNzU1NzI2Y2EzMCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NTIzODA3NSwiZXhwIjoxNzU3ODMwMDc1fQ.e_yVhOdat9VEqhL9UipIZ7UbfihA7R6Ce8lDrb4fFEU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:1903/api/dashboard/admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1903",
+					"path": [
+						"api",
+						"dashboard",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
