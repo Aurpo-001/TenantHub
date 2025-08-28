@@ -20,61 +20,93 @@ const Dashboard = () => {
   const [loadingData, setLoadingData] = useState(true);
 
   // Mock dashboard data
-  const mockDashboardData = {
-    recommendations: [
-      {
-        _id: '1',
-        title: 'Cozy Studio Near Campus',
-        price: 900,
-        type: 'apartment',
-        location: { address: '456 College St' },
-        images: [],
-        ratings: { average: 4.3, count: 8 },
-        views: 67
-      },
-      {
-        _id: '2',
-        title: 'Secure Parking Downtown',
-        price: 120,
-        type: 'garage',
-        location: { address: '789 Main St' },
-        images: [],
-        ratings: { average: 4.0, count: 5 },
-        views: 34
-      }
-    ],
-    recentBookings: [
-      {
-        _id: 'b1',
-        property: {
-          title: 'Modern 2BR Apartment',
-          location: { address: '123 University Ave' }
-        },
-        status: 'confirmed',
-        bookingType: 'rent',
-        createdAt: '2024-01-15',
-        payment: { advanceAmount: 1200 }
-      },
-      {
-        _id: 'b2',
-        property: {
-          title: 'Downtown Garage',
-          location: { address: '456 Business District' }
-        },
-        status: 'pending',
-        bookingType: 'rent',
-        createdAt: '2024-01-12',
-        payment: { advanceAmount: 150 }
-      }
-    ],
-    stats: {
-      totalBookings: 5,
-      activeBookings: 2,
-      completedBookings: 3,
-      totalSpent: 4500
-    }
-  };
+// In your Dashboard.js file, replace the mockDashboardData object with this:
 
+const mockDashboardData = {
+  recommendations: [
+    {
+      _id: '1',
+      title: 'Cozy Studio Near Medical School',
+      price: 850,
+      type: 'apartment',
+      location: { address: '456 Medical District, Health Campus' },
+      images: [],
+      ratings: { average: 4.2, count: 8 },
+      views: 67
+    },
+    {
+      _id: '9',
+      title: 'Secure Parking Garage Downtown',
+      price: 150,
+      type: 'garage',
+      location: { address: '456 Downtown St, City Center' },
+      images: [],
+      ratings: { average: 4.2, count: 8 },
+      views: 45
+    },
+    {
+      _id: '4',
+      title: 'Affordable 1BR Near Business School',
+      price: 950,
+      type: 'apartment',
+      location: { address: '321 Business Ave, Commerce District' },
+      images: [],
+      ratings: { average: 4.0, count: 15 },
+      views: 78
+    },
+    {
+      _id: '11',
+      title: 'Budget Parking Near Metro',
+      price: 80,
+      type: 'garage',
+      location: { address: '567 Metro Plaza, Transit Hub' },
+      images: [],
+      ratings: { average: 3.8, count: 15 },
+      views: 89
+    }
+  ],
+  recentBookings: [
+    {
+      _id: 'b1',
+      property: {
+        title: 'Modern 2BR Apartment Near University',
+        location: { address: '123 University Ave, Campus Town' }
+      },
+      status: 'confirmed',
+      bookingType: 'rent',
+      createdAt: '2024-01-15',
+      payment: { advanceAmount: 1200 }
+    },
+    {
+      _id: 'b2',
+      property: {
+        title: 'Secure Parking Garage Downtown',
+        location: { address: '456 Downtown St, City Center' }
+      },
+      status: 'pending',
+      bookingType: 'rent',
+      createdAt: '2024-01-12',
+      payment: { advanceAmount: 150 }
+    },
+    {
+      _id: 'b3',
+      property: {
+        title: 'Graduate Student Studio',
+        location: { address: '987 Graduate Quarters, Research Campus' }
+      },
+      status: 'completed',
+      bookingType: 'visit',
+      createdAt: '2024-01-08',
+      payment: { advanceAmount: 0 }
+    }
+  ],
+  stats: {
+    totalBookings: 8,
+    activeBookings: 3,
+    completedBookings: 5,
+    totalSpent: 6750
+  }
+};
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate('/login');
@@ -392,7 +424,7 @@ const Dashboard = () => {
                         e.currentTarget.style.borderRadius = '6px';
                         e.currentTarget.style.padding = '0.75rem';
                         e.currentTarget.style.margin = '-0.25rem';
-                      }}
+                      }} 
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = 'transparent';
                         e.currentTarget.style.borderRadius = '0';

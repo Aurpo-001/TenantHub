@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 // Base URL for API - will work for both development and production
 const API_URL = process.env.NODE_ENV === 'production' 
   ? process.env.REACT_APP_API_URL || 'https://your-backend-url.vercel.app'
-  : 'http://localhost:1903';
+  : 'http://localhost:5001';
 
 // Create axios instance
 const api = axios.create({

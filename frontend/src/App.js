@@ -2,12 +2,17 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
-import Header from './components/layout/Header';
+import Header from './components/Header';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Properties from './pages/properties/Properties';
 import PropertyDetails from './pages/properties/PropertyDetails';
 import Dashboard from './pages/dashboard/Dashboard';
+import BookingPage from './pages/bookings/BookingPage';
+import PaymentPage from './pages/payments/PaymentPage';
+import OwnerDashboard from './pages/dashboard/OwnerDashboard';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import CommutePage from './pages/commute/CommutePage';
 import './index.css';
 
 function App() {
@@ -39,7 +44,6 @@ function App() {
             }}
           />
           
-          {/* Header - shows only when authenticated */}
           <Header />
           
           <Routes>
@@ -52,7 +56,12 @@ function App() {
             <Route path="/properties" element={<Properties />} />
             <Route path="/properties/:id" element={<PropertyDetails />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/bookings" element={<BookingsPage />} />
+            <Route path="/booking/:propertyId" element={<BookingPage />} />
+            <Route path="/payment/:bookingId" element={<PaymentPage />} />
+            <Route path="/commute" element={<CommutePage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
@@ -66,11 +75,11 @@ function App() {
   );
 }
 
-// Home Page Component
+// Home Page Component (without header since it's now global)
 const HomePage = () => {
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minHeight: 'calc(100vh - 80px)', // Account for header height
       backgroundColor: '#0a0a0a', 
       display: 'flex', 
       alignItems: 'center', 
@@ -85,7 +94,7 @@ const HomePage = () => {
           Connect students and professionals with quality accommodations.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
-          <Link to="/login" className="btn-primary" style={{ textDecoration: 'none' }}>
+          <Link to="/register" className="btn-primary" style={{ textDecoration: 'none' }}>
             Get Started
           </Link>
           <Link to="/properties" className="btn-outline" style={{ textDecoration: 'none' }}>
@@ -131,7 +140,7 @@ const HomePage = () => {
           </Link>
           
           <Link 
-            to="/login"
+            to="/commute"
             style={{ 
               backgroundColor: '#1a1a1a', 
               padding: '1.5rem', 
@@ -151,12 +160,12 @@ const HomePage = () => {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔒</div>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚗</div>
             <h3 style={{ color: '#f3f4f6', fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-              Secure Booking
+              Smart Commute
             </h3>
             <p style={{ color: '#9ca3af', fontSize: '0.875rem', lineHeight: '1.5' }}>
-              Safe and secure booking process with verified property owners.
+              Find properties with optimal commute times to campus and workplace.
             </p>
           </Link>
           
@@ -190,22 +199,76 @@ const HomePage = () => {
             </p>
           </Link>
         </div>
-        
-        {/* Navigation */}
-        <div style={{ paddingTop: '2rem', borderTop: '1px solid #404040' }}>
-          <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/login" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}
-                  onMouseEnter={(e) => e.target.style.color = '#f98080'}
-                  onMouseLeave={(e) => e.target.style.color = '#9ca3af'}>
-              Login
-            </Link>
-            <Link to="/dashboard" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}
-                  onMouseEnter={(e) => e.target.style.color = '#f98080'}
-                  onMouseLeave={(e) => e.target.style.color = '#9ca3af'}>
-              Dashboard
-            </Link>
-          </div>
-        </div>
+      </div>
+    </div>
+  );
+};
+
+// Account Switching Component
+const AccountSwitcher = () => {
+  const { login } = useAuth();
+
+  const handleDemoLogin = async (email, password) => {
+    await login({ email, password });
+  };
+
+  return (
+    <div style={{ 
+      position: 'fixed', 
+      bottom: '2rem', 
+      right: '2rem', 
+      backgroundColor: '#1a1a1a',
+      border: '1px solid #333',
+      borderRadius: '12px',
+      padding: '1rem',
+      zIndex: 100
+    }}>
+      <h4 style={{ color: '#f3f4f6', fontSize: '0.875rem', marginBottom: '0.75rem', fontWeight: '600' }}>
+        Demo Accounts
+      </h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <button
+          onClick={() => handleDemoLogin('admin@tenantmanager.com', 'admin123')}
+          style={{
+            backgroundColor: '#dc2626',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 0.75rem',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            cursor: 'pointer'
+          }}
+        >
+          👑 Admin Login
+        </button>
+        <button
+          onClick={() => handleDemoLogin('owner@example.com', 'owner123')}
+          style={{
+            backgroundColor: '#059669',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 0.75rem',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            cursor: 'pointer'
+          }}
+        >
+          🏠 Owner Login
+        </button>
+        <button
+          onClick={() => handleDemoLogin('john.student@university.edu', 'password123')}
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 0.75rem',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            cursor: 'pointer'
+          }}
+        >
+          👤 User Login
+        </button>
       </div>
     </div>
   );
@@ -214,7 +277,7 @@ const HomePage = () => {
 // Bookings Page
 const BookingsPage = () => {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', padding: '2rem' }}>
+    <div style={{ minHeight: 'calc(100vh - 80px)', backgroundColor: '#0a0a0a', padding: '2rem' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <div>
@@ -241,9 +304,6 @@ const BookingsPage = () => {
             <Link to="/properties" className="btn-primary" style={{ textDecoration: 'none' }}>
               Browse Properties
             </Link>
-            <Link to="/" className="btn-outline" style={{ textDecoration: 'none' }}>
-              Back to Home
-            </Link>
           </div>
         </div>
       </div>
@@ -254,7 +314,7 @@ const BookingsPage = () => {
 // Reviews Page
 const ReviewsPage = () => {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', padding: '2rem' }}>
+    <div style={{ minHeight: 'calc(100vh - 80px)', backgroundColor: '#0a0a0a', padding: '2rem' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <div>
@@ -278,9 +338,6 @@ const ReviewsPage = () => {
             <Link to="/properties" className="btn-primary" style={{ textDecoration: 'none' }}>
               Find Properties to Review
             </Link>
-            <Link to="/" className="btn-outline" style={{ textDecoration: 'none' }}>
-              Back to Home
-            </Link>
           </div>
         </div>
       </div>
@@ -291,7 +348,7 @@ const ReviewsPage = () => {
 // Profile Page
 const ProfilePage = () => {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', padding: '2rem' }}>
+    <div style={{ minHeight: 'calc(100vh - 80px)', backgroundColor: '#0a0a0a', padding: '2rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ color: '#f3f4f6', fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
@@ -311,9 +368,6 @@ const ProfilePage = () => {
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn-primary">Edit Profile</button>
-            <Link to="/" className="btn-outline" style={{ textDecoration: 'none' }}>
-              Back to Home
-            </Link>
           </div>
         </div>
       </div>
@@ -324,7 +378,7 @@ const ProfilePage = () => {
 // Notifications Page
 const NotificationsPage = () => {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', padding: '2rem' }}>
+    <div style={{ minHeight: 'calc(100vh - 80px)', backgroundColor: '#0a0a0a', padding: '2rem' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ color: '#f3f4f6', fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
@@ -344,9 +398,6 @@ const NotificationsPage = () => {
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn-primary">Mark All as Read</button>
-            <Link to="/" className="btn-outline" style={{ textDecoration: 'none' }}>
-              Back to Home
-            </Link>
           </div>
         </div>
       </div>
@@ -358,7 +409,7 @@ const NotificationsPage = () => {
 const NotFoundPage = () => {
   return (
     <div style={{ 
-      minHeight: '100vh', 
+      minHeight: 'calc(100vh - 80px)', 
       backgroundColor: '#0a0a0a', 
       display: 'flex', 
       alignItems: 'center', 

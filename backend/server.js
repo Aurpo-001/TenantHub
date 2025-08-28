@@ -1,10 +1,12 @@
-const app = require('./app');
-const connectDatabase = require('./config/database');
+import app from './app.js';
+import dotenv from 'dotenv';
+dotenv.config();
+import connectDatabase from './config/database.js';
 
 // Connect to database
 connectDatabase();
 
-const PORT = process.env.PORT || 1903;
+const PORT = process.env.PORT || 5001;
 
 const server = app.listen(PORT, () => {
     console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);

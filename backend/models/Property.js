@@ -39,10 +39,18 @@ const propertySchema = new mongoose.Schema({
                 distance: Number,
                 duration: String
             },
-            transportation: [{
-                type: String,
-                distance: Number
-            }]
+            transportation: [
+                {
+                    transportType: {
+                        type: String,
+                        enum: ['bus_stop', 'metro', 'train', 'rickshaw', 'other']
+                    },
+                    distance: {
+                        type: Number,
+                        required: true
+                    }
+                }
+            ]
         }
     },
     images: [{
