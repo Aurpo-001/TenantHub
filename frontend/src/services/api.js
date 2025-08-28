@@ -1,137 +1,122 @@
+// frontend/src/services/api.js
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 
-// Base URL for API - will work for both development and production
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_URL || 'https://your-backend-url.vercel.app'
-  : 'http://localhost:5001';
+/**
+ * Base URL (from .env) — e.g.
+ * REACT_APP_APIBASE_URL=http://localhost:5001
+ */
+const normalizeBase = (u) => (u || '').replace(/\/+$/, '');
+const API_BASE_URL =
+  normalizeBase(process.env.REACT_APP_APIBASE_URL) || 'http://localhost:5001';
 
-// Create axios instance
-const api = axios.create({
-  baseURL: `${API_URL}/api`,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+/**
+ * Read token from localStorage (covers common keys).
+ * - "token"
+ * - "authToken"
+ * - "user" JSON with { token }
+ */
+const getToken = () => {
+  const direct =
+    localStorage.getItem('token') || localStorage.getItem('authToken');
+  if (direct) return direct;
+
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user?.token || '';
+  } catch {
+    return '';
+  }
+};
+
+/**
+ * Single axios instance for the whole app.
+ * We attach the Authorization header on every request.
+ */
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 20000,
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+/** Request: inject Authorization header when token exists */
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
-// Response interceptor for global error handling
+/**
+ * Response: DO NOT auto-logout on 401 here.
+ * Let pages/components decide what to do.
+ */
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    const message = error.response?.data?.message || 'An error occurred';
-    
-    // Handle specific error codes
-    if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-      toast.error('Session expired. Please login again.');
-    } else if (error.response?.status === 403) {
-      toast.error('Access denied. Insufficient permissions.');
-    } else if (error.response?.status === 404) {
-      toast.error('Resource not found.');
-    } else if (error.response?.status >= 500) {
-      toast.error('Server error. Please try again later.');
-    } else {
-      toast.error(message);
-    }
-    
-    return Promise.reject(error);
-  }
+  (res) => res,
+  (err) => Promise.reject(err)
 );
 
-// Auth API calls
+/* ---------------------- API GROUPS ---------------------- */
+
 export const authAPI = {
-  register: (userData) => api.post('/auth/register', userData),
-  login: (credentials) => api.post('/auth/login', credentials),
-  getProfile: () => api.get('/auth/me'),
-  updateProfile: (data) => api.put('/auth/profile', data),
-  logout: () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  }
+  register: (data) => api.post('/api/auth/register', data),
+  login: (data) => api.post('/api/auth/login', data),
+  me: () => api.get('/api/auth/me'),
+  updateProfile: (data) => api.put('/api/auth/profile', data),
 };
 
-// Properties API calls
 export const propertiesAPI = {
-  getAll: (params = {}) => api.get('/properties', { params }),
-  getById: (id) => api.get(`/properties/${id}`),
-  create: (data) => api.post('/properties', data),
-  update: (id, data) => api.put(`/properties/${id}`, data),
-  delete: (id) => api.delete(`/properties/${id}`),
-  getRecommendations: () => api.get('/properties/user/recommendations'),
+  getAll: (params) => api.get('/api/properties', { params }),
+  getById: (id) => api.get(`/api/properties/${id}`),
+  // (kept for completeness; only used if you create/edit as owner/admin)
+  create: (data) => api.post('/api/properties', data),
+  update: (id, data) => api.put(`/api/properties/${id}`, data),
+  remove: (id) => api.delete(`/api/properties/${id}`),
+  recommendations: () => api.get('/api/properties/user/recommendations'),
 };
 
-// Bookings API calls
 export const bookingsAPI = {
-  create: (data) => api.post('/bookings', data),
-  getMyBookings: (params = {}) => api.get('/bookings/my-bookings', { params }),
-  getById: (id) => api.get(`/bookings/${id}`),
-  processPayment: (id, data) => api.post(`/bookings/${id}/payment`, data),
-  adminAction: (id, data) => api.put(`/bookings/${id}/admin-action`, data),
-  getAllAdmin: (params = {}) => api.get('/bookings/admin/all', { params }),
+  create: (data) => api.post('/api/bookings', data),
+  myBookings: () => api.get('/api/bookings/my-bookings'),
+  getById: (id) => api.get(`/api/bookings/${id}`),
+  pay: (id, data) => api.post(`/api/bookings/${id}/payment`, data),
+
+  // admin helpers (unused for regular users, included for completeness)
+  adminAll: (params) => api.get('/api/bookings/admin/all', { params }),
+  adminAction: (id, data) => api.put(`/api/bookings/${id}/admin-action`, data),
 };
 
-// Reviews API calls
-export const reviewsAPI = {
-  create: (data) => api.post('/reviews', data),
-  getUserReviews: (userId, params = {}) => api.get(`/reviews/user/${userId}`, { params }),
-  getPropertyReviews: (propertyId, params = {}) => api.get(`/reviews/property/${propertyId}`, { params }),
-  markHelpful: (id) => api.put(`/reviews/${id}/helpful`),
-  respond: (id, data) => api.put(`/reviews/${id}/respond`, data),
-  flag: (id, data) => api.put(`/reviews/${id}/flag`, data),
-  getFlagged: () => api.get('/reviews/admin/flagged'),
-  adminReview: (id, data) => api.put(`/reviews/${id}/admin-review`, data),
-};
-
-// Notifications API calls
 export const notificationsAPI = {
-  getAll: (params = {}) => api.get('/notifications', { params }),
-  markAsRead: (id) => api.put(`/notifications/${id}/read`),
-  markAllAsRead: () => api.put('/notifications/mark-all-read'),
-  delete: (id) => api.delete(`/notifications/${id}`),
-  create: (data) => api.post('/notifications', data),
-  getStats: () => api.get('/notifications/admin/stats'),
+  list: (params) => api.get('/api/notifications', { params }),
+  markRead: (id) => api.put(`/api/notifications/${id}/read`),
+  markAllRead: () => api.put('/api/notifications/mark-all-read'),
+  remove: (id) => api.delete(`/api/notifications/${id}`),
 };
 
-// Dashboard API calls
 export const dashboardAPI = {
-  getOwnerDashboard: () => api.get('/dashboard/owner'),
-  updateOwnerDashboard: (data) => api.put('/dashboard/owner', data),
-  generateMonthlyReport: (month) => api.post(`/dashboard/owner/reports/${month}`),
-  getFinancials: (params = {}) => api.get('/dashboard/owner/financials', { params }),
-  getAdminDashboard: () => api.get('/dashboard/admin'),
-  getRecommendationAnalytics: (params = {}) => api.get('/dashboard/admin/recommendations', { params }),
+  owner: () => api.get('/api/dashboard/owner'),
+  updateOwner: (data) => api.put('/api/dashboard/owner', data),
+  ownerFinancials: (params) =>
+    api.get('/api/dashboard/owner/financials', { params }),
+  admin: () => api.get('/api/dashboard/admin'),
+  adminRecs: (params) =>
+    api.get('/api/dashboard/admin/recommendations', { params }),
 };
 
-// Commute API calls
 export const commuteAPI = {
-  createRoute: (data) => api.post('/commute/routes', data),
-  getRoutes: (params = {}) => api.get('/commute/routes', { params }),
-  getRoute: (id) => api.get(`/commute/routes/${id}`),
-  updateRoute: (id, data) => api.put(`/commute/routes/${id}`, data),
-  deleteRoute: (id) => api.delete(`/commute/routes/${id}`),
-  toggleFavorite: (id) => api.put(`/commute/routes/${id}/favorite`),
-  addAlert: (id, data) => api.post(`/commute/routes/${id}/alerts`, data),
-  getNearbyMosques: (params = {}) => api.get('/commute/nearby-mosques', { params }),
-  getPropertiesWithCommute: (params = {}) => api.get('/commute/properties-with-commute', { params }),
+  nearbyMosques: (params) =>
+    api.get('/api/commute/nearby-mosques', { params }),
+  propertiesWithCommute: (params) =>
+    api.get('/api/commute/properties-with-commute', { params }),
+
+  // user routes (protected)
+  listRoutes: (params) => api.get('/api/commute/routes', { params }),
+  createRoute: (data) => api.post('/api/commute/routes', data),
+  getRoute: (id) => api.get(`/api/commute/routes/${id}`),
+  updateRoute: (id, data) => api.put(`/api/commute/routes/${id}`, data),
+  deleteRoute: (id) => api.delete(`/api/commute/routes/${id}`),
+  toggleFavorite: (id) => api.put(`/api/commute/routes/${id}/favorite`),
+  addAlert: (id, data) => api.post(`/api/commute/routes/${id}/alerts`, data),
 };
 
 export default api;
