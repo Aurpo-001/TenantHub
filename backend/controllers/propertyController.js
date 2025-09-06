@@ -19,7 +19,7 @@ const User = require('../models/User');
  *  - page          (number, default 1)
  *  - limit         (number, default 10)
  */
-exports.getProperties = async (req, res) => {
+exports.getProperties = async (req, res, next) => {
   try {
     const {
       search,
@@ -58,9 +58,11 @@ exports.getProperties = async (req, res) => {
       filter['availability.isAvailable'] = true;
     }
 
-    // Base query
-    let query = Property.find(filter);
+    // Create the base query with the filter
+    let query = Property.find(filter).populate('owner', '_id name email');
 
+    // Base query (already defined above with owner population)
+    
     // Select specific fields if requested
     if (select) {
       const fields = select.split(',').join(' ');
@@ -82,7 +84,6 @@ exports.getProperties = async (req, res) => {
       query
         .skip(skip)
         .limit(limitNum)
-        .populate('owner', 'name email phone ownerProfile.ratings'),
     ]);
 
     // Pagination result

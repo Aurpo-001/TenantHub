@@ -33,6 +33,8 @@ const authReducer = (state, action) => {
         error: null,
       };
     case actionTypes.LOGIN_SUCCESS:
+      // Store token in localStorage
+      localStorage.setItem('token', action.payload.token);
       return {
         ...state,
         user: action.payload.user,
@@ -100,17 +102,31 @@ export const AuthProvider = ({ children }) => {
       
       if (token) {
         try {
-          // Try to get user profile from backend
-          const response = await authAPI.getProfile();
+          // Set token in state first
           dispatch({
-            type: actionTypes.SET_USER,
-            payload: response.data.data,
+            type: actionTypes.LOGIN_SUCCESS,
+            payload: { token, user: null }
+          });
+          
+          // Try to get user profile from backend
+          const response = await authAPI.me();
+          const userData = response.data.data;
+          
+          // Ensure we have _id for consistency
+          if (userData.id && !userData._id) {
+            userData._id = userData.id;
+          }
+          
+          // Update with full user data
+          dispatch({
+            type: actionTypes.LOGIN_SUCCESS,
+            payload: { user: userData, token }
           });
         } catch (error) {
-          // Backend not available or token invalid, remove token
-          console.log('Auth check failed, removing token');
+          console.error('Auth check failed:', error?.response?.data || error.message);
+          // Backend not available or token invalid, remove token and logout
           localStorage.removeItem('token');
-          dispatch({ type: actionTypes.SET_LOADING, payload: false });
+          dispatch({ type: actionTypes.LOGOUT });
         }
       } else {
         dispatch({ type: actionTypes.SET_LOADING, payload: false });
@@ -125,78 +141,25 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: actionTypes.LOGIN_START });
       
-      let response;
-      try {
-        // Try to login with backend
-        response = await authAPI.login(credentials);
-        const { token, data: user } = response.data;
-        
-        // Store token in localStorage
-        localStorage.setItem('token', token);
-        
-        dispatch({
-          type: actionTypes.LOGIN_SUCCESS,
-          payload: { user, token },
-        });
-        
-        toast.success(`Welcome back, ${user.name}!`);
-        return { success: true };
-      } catch (backendError) {
-        // Backend not available, use mock authentication
-        console.log('Backend not available, using mock authentication');
-        
-        // Mock users for demo
-        const mockUsers = {
-          'admin@tenantmanager.com': {
-            id: '1',
-            name: 'Admin User',
-            email: 'admin@tenantmanager.com',
-            role: 'admin',
-            phone: '+1234567890'
-          },
-          'john.student@university.edu': {
-            id: '2',
-            name: 'John Student',
-            email: 'john.student@university.edu',
-            role: 'user',
-            phone: '+1234567891'
-          },
-          'owner@example.com': {
-            id: '3',
-            name: 'Property Owner',
-            email: 'owner@example.com',
-            role: 'owner',
-            phone: '+1234567892'
-          }
-        };
-
-        const mockPasswords = {
-          'admin@tenantmanager.com': 'admin123',
-          'john.student@university.edu': 'password123',
-          'owner@example.com': 'owner123'
-        };
-
-        const user = mockUsers[credentials.email];
-        const validPassword = mockPasswords[credentials.email];
-
-        if (user && validPassword === credentials.password) {
-          // Generate mock token
-          const mockToken = `mock_token_${user.id}_${Date.now()}`;
-          
-          // Store token in localStorage
-          localStorage.setItem('token', mockToken);
-          
-          dispatch({
-            type: actionTypes.LOGIN_SUCCESS,
-            payload: { user, token: mockToken },
-          });
-          
-          toast.success(`Welcome back, ${user.name}!`);
-          return { success: true };
-        } else {
-          throw new Error('Invalid credentials');
-        }
+      // Attempt login with backend
+      const response = await authAPI.login(credentials);
+      const { token, data: user } = response.data;
+      
+      if (!token || !user) {
+        throw new Error('Invalid response from server');
       }
+      
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      
+      // Update auth state
+      dispatch({
+        type: actionTypes.LOGIN_SUCCESS,
+        payload: { user, token },
+      });
+      
+      toast.success(`Welcome back, ${user.name}!`);
+      return { success: true };
     } catch (error) {
       const message = error.message || 'Login failed';
       dispatch({
@@ -212,46 +175,25 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: actionTypes.LOGIN_START });
       
-      try {
-        // Try to register with backend
-        const response = await authAPI.register(userData);
-        const { token, data: user } = response.data;
-        
-        // Store token in localStorage
-        localStorage.setItem('token', token);
-        
-        dispatch({
-          type: actionTypes.LOGIN_SUCCESS,
-          payload: { user, token },
-        });
-        
-        toast.success(`Welcome to TenantHub, ${user.name}!`);
-        return { success: true };
-      } catch (backendError) {
-        // Backend not available, use mock registration
-        console.log('Backend not available, using mock registration');
-        
-        const mockUser = {
-          id: `mock_${Date.now()}`,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role || 'user',
-          phone: userData.phone || ''
-        };
-
-        const mockToken = `mock_token_${mockUser.id}_${Date.now()}`;
-        
-        // Store token in localStorage
-        localStorage.setItem('token', mockToken);
-        
-        dispatch({
-          type: actionTypes.LOGIN_SUCCESS,
-          payload: { user: mockUser, token: mockToken },
-        });
-        
-        toast.success(`Welcome to TenantHub, ${mockUser.name}!`);
-        return { success: true };
+      // Register with backend
+      const response = await authAPI.register(userData);
+      const { token, data: user } = response.data;
+      
+      if (!token || !user) {
+        throw new Error('Invalid response from server');
       }
+      
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      
+      // Update auth state
+      dispatch({
+        type: actionTypes.LOGIN_SUCCESS,
+        payload: { user, token },
+      });
+      
+      toast.success(`Welcome to TenantHub, ${user.name}!`);
+      return { success: true };
     } catch (error) {
       const message = error.message || 'Registration failed';
       dispatch({

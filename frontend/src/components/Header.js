@@ -12,7 +12,7 @@ const Header = () => {
   };
 
   const getDashboardLink = () => {
-    if (!user) return '/dashboard';
+    if (!user) return '/';
     
     switch (user.role) {
       case 'admin':
@@ -25,7 +25,9 @@ const Header = () => {
   };
 
   const getRoleDisplay = () => {
-    switch (user?.role) {
+    if (!user) return '';
+    
+    switch (user.role) {
       case 'admin':
         return '👑 Admin';
       case 'owner':
@@ -33,6 +35,32 @@ const Header = () => {
       default:
         return '👤 User';
     }
+  };
+
+  // Early return for loading state
+  if (!isAuthenticated && !user) {
+    return (
+      <header style={{
+        backgroundColor: '#1a1a1a',
+        borderBottom: '1px solid #333',
+        padding: '1rem 0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <h1 style={{ color: '#fff', margin: 0 }}>TenantHub</h1>
+            </Link>
+            <div>
+              <Link to="/login" style={{ color: '#fff', textDecoration: 'none', marginRight: '1rem' }}>Login</Link>
+              <Link to="/register" style={{ color: '#fff', textDecoration: 'none' }}>Register</Link>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
   };
 
   return (
@@ -102,7 +130,7 @@ const Header = () => {
                       {getRoleDisplay()}
                     </span>
                     <span style={{ color: '#d1d5db', fontSize: '0.875rem', fontWeight: '500' }}>
-                      {user.name}
+                      {user?.name || 'User'}
                     </span>
                   </div>
                   

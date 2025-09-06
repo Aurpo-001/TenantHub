@@ -1,10 +1,14 @@
-import app from './app.js';
-import dotenv from 'dotenv';
+const app = require('./app');
+const dotenv = require('dotenv');
+const connectDatabase = require('./config/database');
+
 dotenv.config();
-import connectDatabase from './config/database.js';
 
 // Connect to database
-connectDatabase();
+connectDatabase().catch(err => {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
+});
 
 const PORT = process.env.PORT || 5001;
 

@@ -13,18 +13,17 @@ const notifications = require('./routes/notifications');
 const dashboard = require('./routes/dashboard');
 const reviews = require('./routes/reviews');
 const commute = require('./routes/commute');
+const bkash = require('./routes/bkash');
 
 const app = express();
 
-// Body parser middleware
+// Body parser middleware for other routes
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Enable CORS for frontend integration
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? 
-        ['https://yourfrontend.com'] : 
-        ['http://localhost:3000', 'http://localhost:3001'],
+    origin: true,
     credentials: true
 }));
 
@@ -36,6 +35,50 @@ app.use('/api/notifications', notifications);
 app.use('/api/dashboard', dashboard);
 app.use('/api/reviews', reviews);
 app.use('/api/commute', commute);
+app.use('/api/bkash', bkash);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    
+    // Mongoose validation error
+    if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map(val => val.message);
+        return res.status(400).json({
+            success: false,
+            message: message.join(', ')
+        });
+    }
+
+    // Mongoose duplicate key
+    if (err.code === 11000) {
+        return res.status(400).json({
+            success: false,
+            message: 'Duplicate field value entered'
+        });
+    }
+
+    // JWT errors
+    if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid token'
+        });
+    }
+
+    if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+            success: false,
+            message: 'Token expired'
+        });
+    }
+
+    res.status(err.statusCode || 500).json({
+        success: false,
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
 
 // Basic route for testing
 app.get('/', (req, res) => {

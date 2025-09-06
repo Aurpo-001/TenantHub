@@ -25,12 +25,18 @@ const getCardImage = (images = [], type = 'default') => {
   return isPlaceholder(candidate) ? (FALLBACKS[type] || FALLBACKS.default) : candidate;
 };
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, isAdmin, onDelete, currentUserId }) => {
+
+  
+  const isOwner = currentUserId && (
+    (property.owner?._id && property.owner._id === currentUserId) || 
+    (typeof property.owner === 'string' && property.owner === currentUserId)
+  );
   const formatPrice = (price) => {
     if (price == null) return '—';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'BDT',
       minimumFractionDigits: 0,
     }).format(price);
   };
@@ -235,6 +241,29 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
       </Link>
+      {(isAdmin || isOwner) && (
+        <div className="flex gap-2 p-4 bg-gray-800">
+          <Link
+            to={`/properties/edit/${property._id}`}
+            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Edit
+          </Link>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (window.confirm('Are you sure you want to delete this property?')) {
+                onDelete(property._id);
+              }
+            }}
+            className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-white text-sm"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 };

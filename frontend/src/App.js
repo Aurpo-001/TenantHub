@@ -1,3 +1,4 @@
+import { useAuth } from './context/AuthContext';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -13,6 +14,8 @@ import PaymentPage from './pages/payments/PaymentPage';
 import OwnerDashboard from './pages/dashboard/OwnerDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import CommutePage from './pages/commute/CommutePage';
+import CreateProperty from './pages/properties/CreateProperty';
+import EditProperty from './pages/properties/EditProperty';
 import './index.css';
 
 function App() {
@@ -54,6 +57,8 @@ function App() {
             {/* Main routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/properties" element={<Properties />} />
+            <Route path="/properties/create" element={<CreateProperty />} />
+            <Route path="/properties/edit/:id" element={<EditProperty />} />
             <Route path="/properties/:id" element={<PropertyDetails />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/owner-dashboard" element={<OwnerDashboard />} />

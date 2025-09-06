@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { propertiesAPI, bookingsAPI } from '../../services/api';
 import { toast } from 'react-hot-toast';
+import BkashPaymentModal from '../../components/payments/BkashPaymentModal';
 
 const BookingPage = () => {
   const { propertyId } = useParams();
@@ -11,6 +12,8 @@ const BookingPage = () => {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showBkashModal, setShowBkashModal] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState(null);
   const [formData, setFormData] = useState({
     bookingType: 'visit',
     visitDate: '',
@@ -26,6 +29,11 @@ const BookingPage = () => {
 
   // ---- FIX: memoize loadProperty so it can be safely used in useEffect deps
   const loadProperty = useCallback(async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -187,13 +195,10 @@ const BookingPage = () => {
         console.log('Booking API response:', response.data);
 
         if (response.data.success) {
-          toast.success('Booking submitted successfully!');
+          toast.success('Booking created! Proceed to payment.');
           console.log('Booking created with ID:', response.data.data._id);
-
-          // Redirect to bookings page or dashboard
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 2000);
+          setCurrentBooking(response.data.data);
+          setShowBkashModal(true);
         } else {
           throw new Error(response.data.message || 'Failed to create booking');
         }
@@ -914,6 +919,22 @@ const BookingPage = () => {
           </form>
         </div>
       </div>
+
+      {/* bKash Payment Modal */}
+      {showBkashModal && currentBooking && (
+        <BkashPaymentModal
+          booking={currentBooking}
+          onClose={() => {
+            setShowBkashModal(false);
+            navigate('/dashboard');
+          }}
+          onSuccess={(paymentData) => {
+            console.log('Payment successful:', paymentData);
+            setShowBkashModal(false);
+            navigate('/dashboard');
+          }}
+        />
+      )}
 
       <style>
         {`
